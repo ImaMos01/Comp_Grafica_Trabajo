@@ -146,14 +146,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aruco_samples_utility.hpp" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fragmentShader.glsl" />
     <None Include="tutorial_camera_params.yml" />
+    <None Include="vertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\glfw-3.3.8.bin.WIN64\lib-vc2019\glfw3.lib" />
