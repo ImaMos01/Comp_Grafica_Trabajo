@@ -60,7 +60,6 @@ std::vector<glm::vec3> cubePosition;
 std::queue<glm::vec3> cubePositionTemp;
 
 int main() {
-
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -97,47 +96,47 @@ int main() {
 	Shader program("vertexShader.glsl", "fragmentShader.glsl");
 	
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f, 
-		 0.5f, -0.5f, -0.5f,  
-		 0.5f,  0.5f, -0.5f,  
-		 0.5f,  0.5f, -0.5f,  
-		-0.5f,  0.5f, -0.5f,  
-		-0.5f, -0.5f, -0.5f, 
+		-0.15f, -0.15f, -0.15f,
+		 0.15f, -0.15f, -0.15f,
+		 0.15f,  0.15f, -0.15f,
+		 0.15f,  0.15f, -0.15f,
+		-0.15f,  0.15f, -0.15f,
+		-0.15f, -0.15f, -0.15f,
 
-		-0.5f, -0.5f,  0.5f,  
-		 0.5f, -0.5f,  0.5f,  
-		 0.5f,  0.5f,  0.5f,  
-		 0.5f,  0.5f,  0.5f,  
-		-0.5f,  0.5f,  0.5f,  
-		-0.5f, -0.5f,  0.5f,  
+		-0.15f, -0.15f,  0.15f,
+		 0.15f, -0.15f,  0.15f,
+		 0.15f,  0.15f,  0.15f,
+		 0.15f,  0.15f,  0.15f,
+		-0.15f,  0.15f,  0.15f,
+		-0.15f, -0.15f,  0.15f,
 
-		-0.5f,  0.5f,  0.5f, 
-		-0.5f,  0.5f, -0.5f,  
-		-0.5f, -0.5f, -0.5f, 
-		-0.5f, -0.5f, -0.5f,  
-		-0.5f, -0.5f,  0.5f,  
-		-0.5f,  0.5f,  0.5f,  
+		-0.15f,  0.15f,  0.15f,
+		-0.15f,  0.15f, -0.15f,
+		-0.15f, -0.15f, -0.15f,
+		-0.15f, -0.15f, -0.15f,
+		-0.15f, -0.15f,  0.15f,
+		-0.15f,  0.15f,  0.15f,
 
-		 0.5f,  0.5f,  0.5f,  
-		 0.5f,  0.5f, -0.5f,  
-		 0.5f, -0.5f, -0.5f, 
-		 0.5f, -0.5f, -0.5f,  
-		 0.5f, -0.5f,  0.5f, 
-		 0.5f,  0.5f,  0.5f,  
+		 0.15f,  0.15f,  0.15f,
+		 0.15f,  0.15f, -0.15f,
+		 0.15f, -0.15f, -0.15f,
+		 0.15f, -0.15f, -0.15f,
+		 0.15f, -0.15f,  0.15f,
+		 0.15f,  0.15f,  0.15f,
 
-		-0.5f, -0.5f, -0.5f,  
-		 0.5f, -0.5f, -0.5f, 
-		 0.5f, -0.5f,  0.5f, 
-		 0.5f, -0.5f,  0.5f, 
-		-0.5f, -0.5f,  0.5f,  
-		-0.5f, -0.5f, -0.5f, 
+		-0.15f, -0.15f, -0.15f,
+		 0.15f, -0.15f, -0.15f,
+		 0.15f, -0.15f,  0.15f,
+		 0.15f, -0.15f,  0.15f,
+		-0.15f, -0.15f,  0.15f,
+		-0.15f, -0.15f, -0.15f,
 
-		-0.5f,  0.5f, -0.5f,  
-		 0.5f,  0.5f, -0.5f,  
-		 0.5f,  0.5f,  0.5f, 
-		 0.5f,  0.5f,  0.5f,  
-		-0.5f,  0.5f,  0.5f, 
-		-0.5f,  0.5f, -0.5f
+		-0.15f,  0.15f, -0.15f,
+		 0.15f,  0.15f, -0.15f,
+		 0.15f,  0.15f,  0.15f,
+		 0.15f,  0.15f,  0.15f,
+		-0.15f,  0.15f,  0.15f,
+		-0.15f,  0.15f, -0.15f
 	};
 
 	unsigned int VBO, VAO;
@@ -292,46 +291,45 @@ int main() {
 			//calibrar camara
 			solvePnP(objPoints, markerCorners.at(minIndex), cameraMatrix, distCoeffs, rvecs, tvecs);
 
-			cv::Mat computed_rvec,rot_mat;
+			cv::Mat computed_rvec, rot_mat;
 
 			Rodrigues(rvecs, rot_mat);
 			cv::Mat computed_rot;
 			//multiplicación de matrices
-			cv::gemm(rot_mat, rot[minId],1.0, cv::Mat(),0.0,computed_rot);
-			
-			Rodrigues(computed_rot,computed_rvec);
-			
-			
+			cv::gemm(rot_mat, rot[minId], 1.0, cv::Mat(), 0.0, computed_rot);
+
+			Rodrigues(computed_rot, computed_rvec);
+
+
+			// Transpose the rotation matrix to convert to OpenGL's column-major order
+			cv::Mat rotationMatrixOpenGL = computed_rot.t();
+
+			cv::Mat translationVectorOpenGL = tvecs.clone();
+			translationVectorOpenGL.at<double>(2) *= -1.0;
+			translationVectorOpenGL.at<double>(1) *= -1.0;
+
+			// Convert the result to OpenGL-compatible format (GLM matrices)
+			glm::vec3 cubePosOpengl;
+			memcpy(glm::value_ptr(cubePosOpengl), rotationMatrixOpenGL.data, sizeof(float) * 16);
+			cubePosOpengl[0] = translationVectorOpenGL.at<double>(0);
+			cubePosOpengl[1] = translationVectorOpenGL.at<double>(1);
+			cubePosOpengl[2] = translationVectorOpenGL.at<double>(2);
+
+			//std::cout << modelViewMatrix[3][0] << " " << modelViewMatrix[3][1] << " " << modelViewMatrix[3][2] << "\n";
+			glm::vec3 centerCubeGL = glm::normalize(cubePosOpengl);
+			//std::cout << centerCubeGL[0]  << " " << centerCubeGL[1] << " " << centerCubeGL[2]+0.5f << "\n";
+
 			std::vector<cv::Point2f> imgpt;
 			cv::projectPoints(centPoints.ptr<cv::Vec3f>(0)[minId], computed_rvec, tvecs, cameraMatrix, distCoeffs, imgpt);
 			
 			for (const auto& point : imgpt) {
 				cv::circle(imageCopy, point, 5, cv::Scalar(255, 0, 255), cv::FILLED);
 			}
-
-			// Normalize points to the range [-1, 1]
 			
-			// Calculate the normalization factors
-			//TODO: calculate the max and min of the camera window		
-			
-			float scaleX = 2.0f / (500 - 20);
-			float scaleY = 2.0f / (500 - 20);
-
-			// Normalize the points
-			for (auto& point : imgpt) {
-				point.x = scaleX * (point.x - 20) - 1.0f;
-				point.y = (scaleY * (point.y - 20) - 1.0f) * -1.0f;
-			}
-			
-			
-			// Update the vertex data for the center point
-			//only has x y coordinates
-			glm::vec3 centerr(imgpt[0].x, imgpt[0].y, 0.0f);
-			
-			cubePositionTemp.push(centerr);
+			cubePositionTemp.push(centerCubeGL);
 
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, centerr);
+			model = glm::translate(model, centerCubeGL);
 			program.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -344,6 +342,7 @@ int main() {
 				model = glm::translate(model, i);
 				program.setMat4("model", model);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
+				std::cout << "x: " << i[0] <<" y: " << i[1]<<" z: " << i[2] << "\n";
 			}
 		}
 
