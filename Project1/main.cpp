@@ -39,6 +39,7 @@ float Polygon_Area(std::vector<cv::Point2f>& list_of_points)
 
 std::map<int, cv::Mat> rot;
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
@@ -47,7 +48,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 1.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -58,8 +59,10 @@ float lastFrame = 0.0f;
 
 std::vector<glm::vec3> cubePosition;
 std::queue<glm::vec3> cubePositionTemp;
+float glPointz = -0.5f; //middle
 
 int main() {
+	cubePosition.push_back(glm::vec3(0.0, 0.0, 5.0));
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -82,6 +85,7 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -96,47 +100,47 @@ int main() {
 	Shader program("vertexShader.glsl", "fragmentShader.glsl");
 	
 	float vertices[] = {
-		-0.15f, -0.15f, -0.15f,
-		 0.15f, -0.15f, -0.15f,
-		 0.15f,  0.15f, -0.15f,
-		 0.15f,  0.15f, -0.15f,
-		-0.15f,  0.15f, -0.15f,
-		-0.15f, -0.15f, -0.15f,
+		-0.1f, -0.1f, -0.1f,
+		 0.1f, -0.1f, -0.1f,
+		 0.1f,  0.1f, -0.1f,
+		 0.1f,  0.1f, -0.1f,
+		-0.1f,  0.1f, -0.1f,
+		-0.1f, -0.1f, -0.1f,
 
-		-0.15f, -0.15f,  0.15f,
-		 0.15f, -0.15f,  0.15f,
-		 0.15f,  0.15f,  0.15f,
-		 0.15f,  0.15f,  0.15f,
-		-0.15f,  0.15f,  0.15f,
-		-0.15f, -0.15f,  0.15f,
+		-0.1f, -0.1f,  0.1f,
+		 0.1f, -0.1f,  0.1f,
+		 0.1f,  0.1f,  0.1f,
+		 0.1f,  0.1f,  0.1f,
+		-0.1f,  0.1f,  0.1f,
+		-0.1f, -0.1f,  0.1f,
 
-		-0.15f,  0.15f,  0.15f,
-		-0.15f,  0.15f, -0.15f,
-		-0.15f, -0.15f, -0.15f,
-		-0.15f, -0.15f, -0.15f,
-		-0.15f, -0.15f,  0.15f,
-		-0.15f,  0.15f,  0.15f,
+		-0.1f,  0.1f,  0.1f,
+		-0.1f,  0.1f, -0.1f,
+		-0.1f, -0.1f, -0.1f,
+		-0.1f, -0.1f, -0.1f,
+		-0.1f, -0.1f,  0.1f,
+		-0.1f,  0.1f,  0.1f,
 
-		 0.15f,  0.15f,  0.15f,
-		 0.15f,  0.15f, -0.15f,
-		 0.15f, -0.15f, -0.15f,
-		 0.15f, -0.15f, -0.15f,
-		 0.15f, -0.15f,  0.15f,
-		 0.15f,  0.15f,  0.15f,
+		 0.1f,  0.1f,  0.1f,
+		 0.1f,  0.1f, -0.1f,
+		 0.1f, -0.1f, -0.1f,
+		 0.1f, -0.1f, -0.1f,
+		 0.1f, -0.1f,  0.1f,
+		 0.1f,  0.1f,  0.1f,
 
-		-0.15f, -0.15f, -0.15f,
-		 0.15f, -0.15f, -0.15f,
-		 0.15f, -0.15f,  0.15f,
-		 0.15f, -0.15f,  0.15f,
-		-0.15f, -0.15f,  0.15f,
-		-0.15f, -0.15f, -0.15f,
+		-0.1f, -0.1f, -0.1f,
+		 0.1f, -0.1f, -0.1f,
+		 0.1f, -0.1f,  0.1f,
+		 0.1f, -0.1f,  0.1f,
+		-0.1f, -0.1f,  0.1f,
+		-0.1f, -0.1f, -0.1f,
 
-		-0.15f,  0.15f, -0.15f,
-		 0.15f,  0.15f, -0.15f,
-		 0.15f,  0.15f,  0.15f,
-		 0.15f,  0.15f,  0.15f,
-		-0.15f,  0.15f,  0.15f,
-		-0.15f,  0.15f, -0.15f
+		-0.1f,  0.1f, -0.1f,
+		 0.1f,  0.1f, -0.1f,
+		 0.1f,  0.1f,  0.1f,
+		 0.1f,  0.1f,  0.1f,
+		-0.1f,  0.1f,  0.1f,
+		-0.1f,  0.1f, -0.1f
 	};
 
 	unsigned int VBO, VAO;
@@ -205,7 +209,7 @@ int main() {
 	inputVideo.open(0);
 
 	cv::Mat cameraMatrix, distCoeffs;
-	float markerLength = 0.05;
+	float markerLength = 0.51;
 
 	//parametros de la camara
 	readCameraParameters("tutorial_camera_params.yml",cameraMatrix,distCoeffs);
@@ -301,24 +305,25 @@ int main() {
 			Rodrigues(computed_rot, computed_rvec);
 
 
-			// Transpose the rotation matrix to convert to OpenGL's column-major order
-			cv::Mat rotationMatrixOpenGL = computed_rot.t();
-
 			cv::Mat translationVectorOpenGL = tvecs.clone();
 			translationVectorOpenGL.at<double>(2) *= -1.0;
 			translationVectorOpenGL.at<double>(1) *= -1.0;
 
-			// Convert the result to OpenGL-compatible format (GLM matrices)
+
 			glm::vec3 cubePosOpengl;
-			memcpy(glm::value_ptr(cubePosOpengl), rotationMatrixOpenGL.data, sizeof(float) * 16);
-			cubePosOpengl[0] = translationVectorOpenGL.at<double>(0);
-			cubePosOpengl[1] = translationVectorOpenGL.at<double>(1);
-			cubePosOpengl[2] = translationVectorOpenGL.at<double>(2);
+			
 
-			//std::cout << modelViewMatrix[3][0] << " " << modelViewMatrix[3][1] << " " << modelViewMatrix[3][2] << "\n";
+			cubePosOpengl[0] = translationVectorOpenGL.at<double>(0); //x
+			cubePosOpengl[1] = translationVectorOpenGL.at<double>(1); //y
+			cubePosOpengl[2] = translationVectorOpenGL.at<double>(2); //Z
+
+			
 			glm::vec3 centerCubeGL = glm::normalize(cubePosOpengl);
-			//std::cout << centerCubeGL[0]  << " " << centerCubeGL[1] << " " << centerCubeGL[2]+0.5f << "\n";
-
+			centerCubeGL[2] *= 10; //scaling z coordinates
+			centerCubeGL[2] += 9.09;
+			//glm::vec3 centerCubeGL = cubePosOpengl;
+			//std::cout << centerCubeGL[0]  << " " << centerCubeGL[1] << " " << centerCubeGL[2]<< "\n";
+			
 			std::vector<cv::Point2f> imgpt;
 			cv::projectPoints(centPoints.ptr<cv::Vec3f>(0)[minId], computed_rvec, tvecs, cameraMatrix, distCoeffs, imgpt);
 			
@@ -385,7 +390,9 @@ void processInput(GLFWwindow* window)
 
 	//save location and draw it
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		cubePosition.push_back(cubePositionTemp.front());
+		if (!cubePositionTemp.empty()) {
+			cubePosition.push_back(cubePositionTemp.front());
+		}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -395,4 +402,23 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
