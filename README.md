@@ -1,5 +1,5 @@
 # Tópicos de computación gráfica: Proyecto final
-# Dibujo en 3D con ArUco
+# ArucoPointDraw: Dibujo en 3D con ArUco
 * En el presente trabajo se representan los marcadores ArUcO en el entorno de OPENGL.
 * Se utiliza un cubo que está conformado de marcadores ArUco, donde en base a esos marcadores se encuentra el punto medio (para calcular el punto medio se tomó como referencia el trabajo de [Cube-Pose-Estimation-with-ArUco](https://github.com/Hydran00/Cube-Pose-Estimation-with-ArUco)).
 * Transformamos las coordenadas del cubo y se lo pasamos como coordenadas de posición en el entorno OPENGL.
