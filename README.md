@@ -10,11 +10,12 @@
 3. GLFW - 3.3 & glad - 0.1.34
 4. Glm - 0.9.9.9
 
-##Resultados
+## Resultados
 
 <p align="center">
-  <img src='./res/img1.png' width='500px' />
+  <img src='./res/img1.png' width='600px' />
 </p>
+
 <p align="center">
-  <img src='./res/img2.png' width='500px' />
+  <img src='./res/img2.png' width='600px' />
 </p>
